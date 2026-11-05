@@ -1,0 +1,93 @@
+Top.v:
+module top(
+    input [3:0] sw,
+    input btnC,
+    output [5:0] led
+);
+
+    d_flipflop dff1(
+        .D(sw[0]),
+        .clk(btnC),
+        .Q(led[0]),
+        .NotQ(led[1])
+    );
+
+    jk_flipflop jkff1(
+        .J(sw[1]),
+        .K(sw[2]),
+        .clk(btnC),
+        .Q(led[2]),
+        .NotQ(led[3])
+    );
+
+    t_flipflop tff1(
+        .T(sw[3]),
+        .clk(btnC),
+        .Q(led[4]),
+        .NotQ(led[5])
+    );
+
+endmodule
+
+D_flipflop:
+module d_flipflop(
+    input D,
+    input clk,
+    output reg Q,
+    output NotQ
+);
+
+    initial begin
+        Q = 0;
+    end
+
+    always @(posedge clk) begin
+        Q <= D;
+    end
+
+    assign NotQ = ~Q;
+
+endmodule
+
+Jk_flipflop:
+module jk_flipflop(
+    input J,
+    input K,
+    input clk,
+    output Q,
+    output NotQ
+);
+
+    wire D;
+
+    assign D = (J & NotQ) | (~K & Q);
+
+    d_flipflop dff1(
+        .D(D),
+        .clk(clk),
+        .Q(Q),
+        .NotQ(NotQ)
+    );
+
+endmodule
+
+T_flipflop:
+module t_flipflop(
+    input T,
+    input clk,
+    output Q,
+    output NotQ
+);
+
+    wire D;
+
+    assign D = T ^ Q;
+
+    d_flipflop dff1(
+        .D(D),
+        .clk(clk),
+        .Q(Q),
+        .NotQ(NotQ)
+    );
+
+endmodule
